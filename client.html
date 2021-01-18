@@ -481,7 +481,7 @@
                 if (blurStream) {
                     local_media_stream = blurStream
                     setTimeout(function () {
-                            attachMediaStream(local_media[0], local_media_stream)
+                            // attachMediaStream(local_media[0], local_media_stream)
                             peer_connection.addStream(local_media_stream)
                         },
                         5000);
@@ -565,7 +565,7 @@
         <button class="button" id="recordScreenBtn">녹화시작</button>
         <button class="button" id="blurScreenBtn">흐린배경</button>
         <button class="button" id="whiteboardBtn">화이트보드</button>
-        <button class="button" id="whiteboardShareBtn">화이트보드 공유</button>
+        <button class="button" id="whiteboardShareBtn" hidden>화이트보드 공유</button>
     </div>
 
     <script>
