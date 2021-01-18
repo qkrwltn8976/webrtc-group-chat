@@ -8,9 +8,10 @@
 // MIT License   - www.WebRTC-Experiment.com/licence
 // --------------------------------------------------
 
-function CanvasDesigner(webrtcHandler) {
+function CanvasDesigner() {
     var designer = this;
     designer.iframe = null;
+    designer.webrtcHandler = null;
 
     var tools = {
         line: true,
@@ -228,6 +229,10 @@ function CanvasDesigner(webrtcHandler) {
             renderStream: true
         });
     };
+
+    designer.setWebRTCHandler = function(webrtcHandler) {
+        designer.webrtcHandler = webrtcHandler;
+    }
 
     designer.widgetHtmlURL = 'widget.html';
     designer.widgetJsURL = 'widget.min.js';

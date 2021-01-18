@@ -57,7 +57,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0"></script>
     <!-- <script src="https://www.webrtc-experiment.com/Canvas-Designer/canvas-designer-widget.js"></script> -->
     <script src="scripts/canvas-designer-widget.js"></script>
-   
+
     <script>
         /** CONFIG **/
         var SIGNALING_SERVER = "http://webrtc-webrtc.193b.starter-ca-central-1.openshiftapps.com/";
@@ -144,11 +144,7 @@
                     } else {
                         // console.log('Connection was lost. Peer closed the connection.')
                     }
-                    // if (designer.pointsLength > 0) {
-                    //     console.log('Designer Sync')
-                    //     // you seems having data to be synced with new user!
-                    //     designer.sync();
-                    // }
+
                 }
 
                 channel.onclose = function () {
@@ -156,9 +152,22 @@
                 }
 
                 channel.onmessage = function (event) {
-                    console.log("화이트보드!!")
-
-                    designer.syncData(event.data);
+                    console.log("화이트보드 받음!!")
+                    console.log(event)
+                    console.log(Object.prototype.toString.call(event.data[0]))
+                    console.log(JSON.stringify(event.data))
+                    // for (let i = 0; i < this.dataLists.length; i++) {
+                    //     if (this.dataLists[i].id === parseInt(data, 10)) {
+                    //         console.log(this.dataLists[i]);
+                    //         break;
+                    //     }
+                    // }
+                    if (event.data === 'plz-sync-points') {
+                        designer.sync();
+                        return;
+                    }
+      
+                    designer.syncData(JSON.parse(event.data));
                 };
             }
 
@@ -275,11 +284,11 @@
 
 
 
-                function onReceiveMessageCallback(event) {
-                    console.log('Received Message');
-                    console.log("화이트보드!!")
-                    // designer.syncData(event.data);
-                }
+                // function onReceiveMessageCallback(event) {
+                //     console.log('Received Message');
+                //     console.log("화이트보드!!")
+                //     designer.syncData(event.data);
+                // }
             });
 
 
@@ -502,25 +511,45 @@
             whiteboardShareButton.click(whiteboardShare);
 
             async function startWhiteboard() {
-                // $('#canvas').append(canvas.getHtml());
-                // canvas.onInsert();
-                // canvas.api.startEditing();
-                // createConnection();
-                data_channel.send("안녕");
+                // data_channel.send("안녕");
+                if (designer.pointsLength <= 0) {
+                    // make sure that remote user gets all drawings synced.
+                    setTimeout(function () {
+                        data_channel.send('plz-sync-points');
+                    }, 1000);
+                }
                 designer.appendTo(document.body || document.documentElement);
                 designer.addSyncListener(function (data) {
                     console.log("화이트보드 받아!!")
-                    data_channel.send(data);
+                    console.log(data)
+                    console.log(typeof(data))
+                    data_channel.send(JSON.stringify(data));
                 });
-                designer.captureStream(function (stream) {
-                    console.log(stream)
-                    local_media_stream = stream
-                    attachMediaStream(local_media[0], local_media_stream)
-                });
+                // designer.captureStream(function (stream) {
+                //     console.log(stream)
+                //     local_media_stream = stream
+                //     attachMediaStream(local_media[0], local_media_stream)
+                // });
             }
 
-            function whiteboardShare() {
+            async function whiteboardShare() {
+                var x = 0;
+                var y = 0;
+                var width = designer.iframe.clientWidth;
+                var height = designer.iframe.clientHeight;
 
+                var image = 'https://www.webrtc-experiment.com/images/RTCMultiConnection-STUN-TURN-usage.png';
+
+                var points = [
+                    ['image', [image, x, y, width, height, 1],
+                        ['2', '#6c96c8', 'rgba(0,0,0,0)', '1', 'source-over', 'round', 'round', '15px "Arial"']
+                    ]
+                ];
+
+                designer.syncData({
+                    startIndex: 0,
+                    points: points
+                });
             }
         }
     </script>
@@ -538,22 +567,16 @@
         <button class="button" id="whiteboardBtn">화이트보드</button>
         <button class="button" id="whiteboardShareBtn">화이트보드 공유</button>
     </div>
-    <video id="canvasVideo"></video>
 
     <script>
         /** for whiteboard */
-        var designer = new CanvasDesigner(peer_connection);
+        var designer = new CanvasDesigner();
         // both links are mandatory
         // widget.html will internally use widget.js
         designer.widgetHtmlURL =
             'https://www.webrtc-experiment.com/Canvas-Designer/widget.html'; // you can place this file anywhere
         designer.widgetJsURL =
             'https://www.webrtc-experiment.com/Canvas-Designer/widget.js'; // you can place this file anywhere
-        designer.addSyncListener(function (data) {
-            console.log("화이트보드 받아!!")
-            data_channel.send(data);
-            designer.send(JSON.stringify(data));
-        });
         designer.captureStream(function (stream) {
             var url = URL.createObjectURL(stream);
             console.log(url)
