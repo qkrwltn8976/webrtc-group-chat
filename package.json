@@ -1,6 +1,5 @@
 {
-  "name": "",
-  "version": "",
+  "name": "webrtc-group-chat",
   "description": "WebRTC Signaling Server",
   "scripts": {
     "start": "node signaling-server.js"
@@ -8,7 +7,19 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "node-static": "^0.7.11",
     "socket.io": "^1.4.8"
   },
-  "main": "signaling-server.js"
+  "main": "signaling-server.js",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmenezesg/webrtc-group-chat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gmenezesg/webrtc-group-chat/issues"
+  },
+  "homepage": "https://github.com/gmenezesg/webrtc-group-chat#readme"
 }
